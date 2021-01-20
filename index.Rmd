@@ -1,0 +1,176 @@
+---
+title: "Densidad de carbono en biomasa forestal en la Gran Área Metropolitana"
+output: 
+  flexdashboard::flex_dashboard:
+    orientation: rows
+---
+
+```{r setup, include=FALSE}
+#-------------------- Paquetes --------------------
+
+library(flexdashboard)
+library(dplyr)
+library(sf)
+library(leaflet)
+library(leafem)
+library(esri2sf)
+library(raster)
+library(DT)
+
+```
+
+Row {data-height=10}
+-----------------------------------------------------------------------
+### **Servicio ecosistémico de regulación: Almacenamiento y secuestro de carbono**
+
+Row {data-height=800}
+-----------------------------------------------------------------------
+
+### {data-width=750}
+```{r include=FALSE}
+
+#--------- URL de geoservicios y datos ------------
+
+url_agfs_limite_gam <-
+  "https://services9.arcgis.com/RrvMEynxDB8hycVO/arcgis/rest/services/gam_limite_gam/FeatureServer/0"
+
+url_raster_carbono_forestal <-
+  "https://raw.githubusercontent.com/atlas-servicios-ecosistemicos-gam/datos-servicios-ecosistemicos/master/gam/carbono_forestal_gam_web.tif"
+
+#---------------- Objetos sf y raster -----------------
+
+# Límite de la GAM
+sf_limite_gam <- 
+  esri2sf(url_agfs_limite_gam)
+
+# Límite de la GAM (reproyectada a Web Mercator)
+sf_limite_gam_web <- 
+  sf_limite_gam %>%
+  st_transform(3857)
+
+# Capa raster de carbono forestal (en Web Mercator)
+raster_carbono_forestal <-
+  raster(url_raster_carbono_forestal) %>%
+  aggregate(fact=2, fun=modal) %>% # ¡¡HAY QUE TRATAR DE ELIMINAR ESTA AGRUPACIÓN. PODRÍA FUNCIONAR AL USAR MÁS MEMORIA LINUX!!  
+  crop(sf_limite_gam_web) %>%
+  mask(sf_limite_gam_web)
+
+#---------------- Paletas de colores ---------------
+
+# Carbono forestal
+colores_carbono_forestal <- c("#edf8fb", "#b2e2e2", "#66c2a4", "#2ca25f", "#006d2c")
+pal_carbono_forestal <- 
+  colorNumeric(
+    colores_carbono_forestal, 
+    values(raster_carbono_forestal),
+    na.color = "transparent"
+  )
+
+```
+
+```{r}
+
+#------------------- Mapa ------------------
+
+leaflet() %>%
+  addProviderTiles(providers$OpenStreetMap.Mapnik, group = "OpenStreetMap") %>%
+  addProviderTiles(providers$Stamen.TonerLite, group = "Stamen Toner Lite") %>%
+  addProviderTiles(providers$CartoDB.DarkMatter, group = "CartoDB Dark Matter") %>%
+  addProviderTiles(providers$Esri.WorldImagery, group = "Imágenes de ESRI") %>%
+  addPolygons(
+    data = sf_limite_gam,
+    color = "Purple",
+    fillColor = "transparent",
+    stroke = TRUE,
+    weight = 6.0,
+    group = "Límite de la GAM"
+  ) %>%
+  addRasterImage(
+    raster_carbono_forestal, 
+    colors = pal_carbono_forestal,
+    opacity = 0.9,
+    group = "Carbono forestal"
+  ) %>%  
+  addLegend(
+    title = "Densidad de carbono (Mg/ha)",
+    values = values(raster_carbono_forestal),
+    pal = pal_carbono_forestal,
+    position = "bottomright",
+    group = "Carbono forestal"
+  ) %>%    
+  addLayersControl(
+    baseGroups = c("OpenStreetMap", "Stamen Toner Lite", "CartoDB Dark Matter", "Imágenes de ESRI"),
+    overlayGroups = c("Límite de la GAM", "Carbono forestal"),
+    options = layersControlOptions(collapsed = TRUE)    
+  ) %>%  
+  addScaleBar(
+    position = "bottomright",
+    options = scaleBarOptions(imperial = FALSE)
+  ) %>%
+  addMouseCoordinates()
+```
+
+### Stock por sitio de estudio {data-width=250}
+```{r}
+
+# Vector de nombres de sitios
+sitios <- 
+  c("Corredores y cantones", 
+    "CBI Río Torres", "CBI María Aguilar", "CBI Torres y María Aguilar", 
+    "San José", "Curridabat", "Monts de Oca", "La Unión")
+
+# Vector de stocks
+stocks <- 
+  c(1036709, 
+    338455, 145622, 477005, 
+    107040, 65519, 128522, 461041)
+
+sitios_stocks <- 
+  data.frame(
+    sitio = sitios, 
+    stock = stocks
+  )
+
+sitios_stocks %>%
+DT::datatable(
+  colnames = c("Sitio", "Mg C total"),
+  rownames = FALSE,
+  options = list(title = "Stock por sitio de estudio", pageLength = 15, dom = 't')
+)
+
+```
+
+Row {data-height=190}
+-----------------------------------------------------------------------
+
+### Mínimo {.value-box} {data-width=250}
+```{r}
+valueBox(
+  value = "115.0 Mg/ha", 
+  caption = "Mínimo"
+)
+```
+
+### Promedio {.value-box} {data-width=250}
+```{r}
+valueBox(
+  value = "225.2 Mg/ha", 
+  caption = "Promedio"
+)
+```
+
+### Máximo {.value-box} {data-width=250}
+```{r}
+valueBox(
+  value = "491.0 Mg/ha", 
+  caption = "Máximo"
+)
+```
+
+### Almacén total {.value-box} {data-width=250}
+```{r}
+valueBox(
+  value = "15,171,170 Mg C",
+  caption = "Almacén total"
+)
+```
