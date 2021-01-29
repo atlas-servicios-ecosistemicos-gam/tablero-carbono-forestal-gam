@@ -21,7 +21,7 @@ library(DT)
 
 Row {data-height=10}
 -----------------------------------------------------------------------
-### **Servicio ecosistémico de regulación: Almacenamiento y secuestro de carbono**
+### **Servicio ecosistémico de regulación: Almacenamiento y secuestro de carbono. Fuente: Imágenes del sensor Sentinel 2B (Agencia Espacial Europea).**
 
 Row {data-height=800}
 -----------------------------------------------------------------------
