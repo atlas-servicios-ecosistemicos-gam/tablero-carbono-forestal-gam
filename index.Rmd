@@ -116,7 +116,7 @@ leaflet() %>%
 # Vector de nombres de sitios
 sitios <- 
   c("Corredores y cantones", 
-    "CBI Río Torres", "CBI María Aguilar", "CBI Torres y María Aguilar", 
+    "CBI Río Torres", "CBI María Aguilar", "CBI Río Torres y María Aguilar", 
     "San José", "Curridabat", "Montes de Oca", "La Unión")
 
 # Vector de stocks
