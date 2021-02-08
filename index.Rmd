@@ -146,31 +146,31 @@ Row {data-height=190}
 ### Mínimo {.value-box} {data-width=250}
 ```{r}
 valueBox(
-  value = "115.0 Mg/ha", 
-  caption = "Mínimo"
-)
-```
-
-### Promedio {.value-box} {data-width=250}
-```{r}
-valueBox(
-  value = "225.2 Mg/ha", 
-  caption = "Promedio"
+  value = "Mínimo", 
+  caption = "<h2><strong>115.0 Mg/ha</strong></h2>"
 )
 ```
 
 ### Máximo {.value-box} {data-width=250}
 ```{r}
 valueBox(
-  value = "491.0 Mg/ha", 
-  caption = "Máximo"
+  value = "Máximo", 
+  caption = "<h2><strong>491.0 Mg/ha</strong></h2>"
+)
+```
+
+### Promedio {.value-box} {data-width=250}
+```{r}
+valueBox(
+  value = "Promedio", 
+  caption = "<h2><strong>225.2 Mg/ha</strong></h2>"
 )
 ```
 
 ### Almacén total {.value-box} {data-width=250}
 ```{r}
 valueBox(
-  value = "15,171,170 Mg C",
-  caption = "Almacén total"
+  value = "Almacén total",
+  caption = "<h2><strong>15,171,170.0 Mg C</strong></h2>"
 )
 ```
