@@ -13,6 +13,7 @@ library(dplyr)
 library(sf)
 library(leaflet)
 library(leaflet.extras)
+library(leaflet.opacity)
 library(leafem)
 library(esri2sf)
 library(raster)
@@ -88,6 +89,7 @@ leaflet() %>%
   ) %>%
   addRasterImage(
     raster_carbono_forestal, 
+    layerId = "raster",    
     colors = pal_carbono_forestal,
     opacity = 0.9,
     group = "Carbono forestal"
@@ -110,7 +112,8 @@ leaflet() %>%
   ) %>%
   addMouseCoordinates() %>%
   addSearchOSM() %>%
-  addResetMapButton()
+  addResetMapButton() %>%
+  addOpacitySlider(layerId = "raster")
 ```
 
 ### Stock por sitio de estudio {data-width=250}
